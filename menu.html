@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu — Tea Toria | Bhopal's Tandoor Chai</title>
+  <meta name="description" content="Explore Tea Toria's full menu — Tandoor Chai, kulhad varieties, coffee, shakes, maggie, sandwiches, burgers, pizza, pasta, snacks and more." />
+  <link rel="icon" type="image/jpeg" href="/images/tea-toria-logo-green.jpg" />
+</head>
+<body>
+
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <p class="section-label">What We Serve</p>
+      <h1 class="section-title">Tea Toria <em>Menu</em></h1>
+      <p class="page-hero-sub">From signature tandoor chai to loaded burgers — explore our full menu crafted with love.</p>
+    </div>
+  </section>
+
+  <section class="menu-section" id="menu">
+    <div class="menu-tabs" id="menuTabs">
+      <button class="menu-tab active" data-cat="chai">☕ Kulhad Chai</button>
+      <button class="menu-tab" data-cat="icetea">🧊 Ice & Special</button>
+      <button class="menu-tab" data-cat="coffee">☕ Coffee</button>
+      <button class="menu-tab" data-cat="shakes">🥤 Shakes</button>
+      <button class="menu-tab" data-cat="maggie">🍜 Maggie</button>
+      <button class="menu-tab" data-cat="sandwich">🥪 Sandwich</button>
+      <button class="menu-tab" data-cat="burger">🍔 Burger</button>
+      <button class="menu-tab" data-cat="pizza">🍕 Pizza</button>
+      <button class="menu-tab" data-cat="pasta">🍝 Pasta</button>
+      <button class="menu-tab" data-cat="snacks">🍟 Snacks</button>
+      <button class="menu-tab" data-cat="bun">🧁 Musca Bun</button>
+    </div>
+
+    <div id="menuContainer"></div>
+  </section>
+
+  <script type="module">
+    import './src/styles/menu.css';
+    import { initApp } from './src/main.js';
+    initApp('Menu');
+
+    // Menu data comes from admin panel (localStorage)
+    const STORAGE_KEY = 'teatoria_menu';
+
+    function getItems(cat) {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data[cat] && data[cat].length > 0) return data[cat];
+      }
+      return [];
+    }
+
+    function renderCards(items) {
+      return items.map(item => `
+        <div class="menu-card reveal visible">
+          ${item.img
+            ? `<img class="menu-card-img" src="${item.img}" alt="${item.name}" loading="lazy" />`
+            : `<div class="menu-card-img" style="background:var(--green-deep);display:flex;align-items:center;justify-content:center;font-size:2rem;">🍵</div>`
+          }
+          <div class="menu-card-body">
+            <div class="menu-card-name">${item.name}</div>
+            <div class="menu-card-sub">${item.sub}</div>
+            <span class="menu-card-tag">${item.tag || ''}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderEmpty() {
+      return `
+        <div style="text-align:center;padding:60px 20px;color:var(--text-light);opacity:0.6;">
+          <p style="font-size:2.5rem;margin-bottom:12px;">📋</p>
+          <p style="font-size:1.1rem;font-family:'Playfair Display',serif;">No items added yet</p>
+          <p style="font-size:0.85rem;margin-top:8px;">Use the <a href="/admin.html" style="color:var(--gold);text-decoration:underline;">Menu Manager</a> to add items.</p>
+        </div>`;
+    }
+
+    function showMenu(cat) {
+      const container = document.getElementById('menuContainer');
+      const items = getItems(cat);
+      container.innerHTML = items.length > 0
+        ? `<div class="menu-grid">${renderCards(items)}</div>`
+        : renderEmpty();
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-cat="${cat}"]`).classList.add('active');
+    }
+
+    document.getElementById('menuTabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.menu-tab');
+      if (tab) showMenu(tab.dataset.cat);
+    });
+
+    showMenu('chai');
+  </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Manager — Tea Toria Admin</title>
+  <link rel="icon" type="image/jpeg" href="/images/tea-toria-logo-green.jpg" />
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span>🍵</span>
+        <div>
+          <h2>Tea Toria</h2>
+          <p>Menu Manager</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="categoryNav">
+        <button class="cat-btn active" data-cat="chai">☕ Kulhad Chai</button>
+        <button class="cat-btn" data-cat="icetea">🧊 Ice & Special</button>
+        <button class="cat-btn" data-cat="coffee">☕ Coffee</button>
+        <button class="cat-btn" data-cat="shakes">🥤 Shakes</button>
+        <button class="cat-btn" data-cat="maggie">🍜 Maggie</button>
+        <button class="cat-btn" data-cat="sandwich">🥪 Sandwich</button>
+        <button class="cat-btn" data-cat="burger">🍔 Burger</button>
+        <button class="cat-btn" data-cat="pizza">🍕 Pizza</button>
+        <button class="cat-btn" data-cat="pasta">🍝 Pasta</button>
+        <button class="cat-btn" data-cat="snacks">🍟 Snacks</button>
+        <button class="cat-btn" data-cat="bun">🧁 Musca Bun</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/menu.html" target="_blank" class="preview-btn">👁 Preview Menu</a>
+        <button class="reset-btn" id="resetAll">🗑 Reset All Data</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+      <header class="admin-header">
+        <div>
+          <h1 id="catTitle">Kulhad Chai</h1>
+          <p class="item-count" id="itemCount">0 items</p>
+        </div>
+        <button class="add-btn" id="addItemBtn">+ Add Item</button>
+      </header>
+
+      <!-- ITEM GRID -->
+      <div class="items-grid" id="itemsGrid"></div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <span>📋</span>
+        <h3>No items yet</h3>
+        <p>Click "Add Item" to add your first menu item to this category.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="itemModal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Item</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+
+      <form id="itemForm">
+        <!-- IMAGE UPLOAD -->
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="imageInput" accept="image/*" hidden />
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <span>📷</span>
+            <p>Click or drag image here</p>
+            <small>JPG, PNG, WebP — max 2MB</small>
+          </div>
+          <img class="upload-preview" id="uploadPreview" alt="Preview" />
+          <button type="button" class="upload-change" id="uploadChange" style="display:none;">Change Image</button>
+        </div>
+
+        <!-- FIELDS -->
+        <div class="form-fields">
+          <div class="field">
+            <label for="itemName">Item Name *</label>
+            <input type="text" id="itemName" placeholder="e.g. Tandoor Chai" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="itemSub">Description *</label>
+              <input type="text" id="itemSub" placeholder="Short description" required />
+            </div>
+            <div class="field">
+              <label for="itemTag">Tag / Label</label>
+              <input type="text" id="itemTag" placeholder="e.g. Signature, Spicy" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="itemRecipe">Recipe <span class="optional">(optional)</span></label>
+            <textarea id="itemRecipe" rows="3" placeholder="Ingredients & preparation notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+          <button type="submit" class="btn-save">💾 Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import './src/styles/admin.css';
+
+    // ── STATE ──
+    let currentCat = 'chai';
+    let editIndex = -1;
+    const STORAGE_KEY = 'teatoria_menu';
+
+    const catNames = {
+      chai: 'Kulhad Chai', icetea: 'Ice & Special', coffee: 'Coffee',
+      shakes: 'Shakes', maggie: 'Maggie', sandwich: 'Sandwich',
+      burger: 'Burger', pizza: 'Pizza', pasta: 'Pasta',
+      snacks: 'Snacks', bun: 'Musca Bun'
+    };
+
+    // ── STORAGE ──
+    function loadMenu() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+      // init empty categories
+      const data = {};
+      Object.keys(catNames).forEach(k => data[k] = []);
+      return data;
+    }
+
+    function saveMenu(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // ── RENDER ──
+    function render() {
+      const data = loadMenu();
+      const items = data[currentCat] || [];
+      const grid = document.getElementById('itemsGrid');
+      const empty = document.getElementById('emptyState');
+      const count = document.getElementById('itemCount');
+
+      count.textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
+
+      if (items.length === 0) {
+        grid.innerHTML = '';
+        grid.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+      }
+
+      empty.style.display = 'none';
+      grid.style.display = 'grid';
+
+      grid.innerHTML = items.map((item, i) => `
+        <div class="item-card">
+          <div class="item-img-wrap">
+            ${item.img
+              ? `<img src="${item.img}" alt="${item.name}" />`
+              : `<div class="no-img"><span>📷</span><p>No image</p></div>`
+            }
+          </div>
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p>${item.sub}</p>
+            ${item.tag ? `<span class="item-tag">${item.tag}</span>` : ''}
+            ${item.recipe ? `<details class="item-recipe"><summary>📖 Recipe</summary><p>${item.recipe}</p></details>` : ''}
+          </div>
+          <div class="item-actions">
+            <button class="act-edit" data-idx="${i}" title="Edit">✏️</button>
+            <button class="act-delete" data-idx="${i}" title="Delete">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+
+      // actions
+      grid.querySelectorAll('.act-edit').forEach(btn => {
+        btn.addEventListener('click', () => openModal(parseInt(btn.dataset.idx)));
+      });
+      grid.querySelectorAll('.act-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (confirm('Delete this item?')) {
+            const data = loadMenu();
+            data[currentCat].splice(parseInt(btn.dataset.idx), 1);
+            saveMenu(data);
+            render();
+          }
+        });
+      });
+    }
+
+    // ── MODAL ──
+    const overlay = document.getElementById('modalOverlay');
+    const form = document.getElementById('itemForm');
+    const imageInput = document.getElementById('imageInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const preview = document.getElementById('uploadPreview');
+    const placeholder = document.getElementById('uploadPlaceholder');
+    const changeBtn = document.getElementById('uploadChange');
+    let currentImage = '';
+
+    function openModal(idx = -1) {
+      editIndex = idx;
+      document.getElementById('modalTitle').textContent = idx === -1 ? 'Add New Item' : 'Edit Item';
+
+      if (idx >= 0) {
+        const item = loadMenu()[currentCat][idx];
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemSub').value = item.sub;
+        document.getElementById('itemTag').value = item.tag || '';
+        document.getElementById('itemRecipe').value = item.recipe || '';
+        currentImage = item.img || '';
+        if (currentImage) {
+          preview.src = currentImage;
+          preview.style.display = 'block';
+          placeholder.style.display = 'none';
+          changeBtn.style.display = 'block';
+        }
+      } else {
+        form.reset();
+        currentImage = '';
+        preview.style.display = 'none';
+        placeholder.style.display = 'flex';
+        changeBtn.style.display = 'none';
+      }
+
+      overlay.classList.add('show');
+    }
+
+    function closeModal() {
+      overlay.classList.remove('show');
+      form.reset();
+      currentImage = '';
+      preview.style.display = 'none';
+      placeholder.style.display = 'flex';
+      changeBtn.style.display = 'none';
+    }
+
+    // Image handling
+    uploadArea.addEventListener('click', (e) => {
+      if (e.target.closest('.upload-change') || e.target === uploadArea || e.target.closest('.upload-placeholder')) {
+        imageInput.click();
+      }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImage(file);
+    });
+
+    imageInput.addEventListener('change', () => {
+      if (imageInput.files[0]) handleImage(imageInput.files[0]);
+    });
+
+    function handleImage(file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image too large. Max 2MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentImage = e.target.result;
+        preview.src = currentImage;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+        changeBtn.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Form submit
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const item = {
+        name: document.getElementById('itemName').value.trim(),
+        sub: document.getElementById('itemSub').value.trim(),
+        tag: document.getElementById('itemTag').value.trim(),
+        recipe: document.getElementById('itemRecipe').value.trim(),
+        img: currentImage
+      };
+
+      const data = loadMenu();
+      if (editIndex >= 0) {
+        data[currentCat][editIndex] = item;
+      } else {
+        data[currentCat].push(item);
+      }
+      saveMenu(data);
+      closeModal();
+      render();
+    });
+
+    // ── EVENTS ──
+    document.getElementById('addItemBtn').addEventListener('click', () => openModal());
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+    document.getElementById('categoryNav').addEventListener('click', (e) => {
+      const btn = e.target.closest('.cat-btn');
+      if (!btn) return;
+      currentCat = btn.dataset.cat;
+      document.getElementById('catTitle').textContent = catNames[currentCat];
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    });
+
+    document.getElementById('resetAll').addEventListener('click', () => {
+      if (confirm('This will delete ALL your menu items. Are you sure?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    });
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
