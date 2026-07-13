@@ -4,7 +4,7 @@ Tea Toria is Bhopal's authentic tandoor chai café — serving clay-fired kulhad
 
 ## 🌐 Live Website
 
-**[tea-toria.vercel.app](https://tea-toria.vercel.app)**
+**[tea-toria.in](https://tea-toria.in)**
 
 ## ✨ Features
 
