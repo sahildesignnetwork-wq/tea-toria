@@ -41,11 +41,20 @@
   max-width: 720px;
 }
 
-.hero-icon {
-  font-size: 5rem;
-  margin-bottom: 20px;
+.hero-logo {
+  max-width: 140px;
+  border-radius: 50%;
+  box-shadow: 0 16px 48px rgba(26,58,26,0.25), 0 0 0 1px rgba(200,165,90,0.3);
+  margin-bottom: 24px;
   display: block;
+  margin-left: auto;
+  margin-right: auto;
   animation: fadeUp 0.8s ease both;
+  transition: transform 0.5s ease;
+}
+
+.hero-logo:hover {
+  transform: scale(1.05);
 }
 
 .hero-eyebrow {
@@ -157,11 +166,30 @@
 }
 
 .about-visual {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 8rem;
+  position: relative;
+}
+
+.about-logo {
+  max-width: 80%;
+  border-radius: 50%;
+  box-shadow: 0 16px 48px rgba(26,58,26,0.15), 0 0 0 1px rgba(200,165,90,0.2);
+  transition: transform 0.5s ease;
+}
+
+.about-logo:hover {
+  transform: scale(1.03);
+}
+
+.about-visual::after {
+  content: '';
+  position: absolute;
+  inset: 5%;
+  background: radial-gradient(circle, rgba(200,165,90,0.08), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .about-text p {
@@ -568,6 +596,8 @@
 }
 
 @media (max-width: 768px) {
+  .hero-logo { max-width: 110px; }
+  .about-logo { max-width: 60%; }
   .about { grid-template-columns: 1fr; gap: 40px; }
   .why-grid { grid-template-columns: 1fr 1fr; }
   .reviews-grid { grid-template-columns: 1fr; }
