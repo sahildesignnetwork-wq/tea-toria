@@ -8,7 +8,67 @@
 </head>
 <body>
 
-  <div class="admin-layout">
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LOGIN SCREEN                                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-bg-leaves">
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">🌿</div>
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">🌿</div>
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">☕</div>
+    </div>
+
+    <div class="login-card" id="loginCard">
+      <div class="login-brand">
+        <img src="/images/tea-toria-logo-green.jpg" alt="Tea Toria" class="login-logo" />
+        <h1>Tea <span>Toria</span></h1>
+        <p class="login-subtitle">Admin Panel</p>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="login-field">
+          <label for="loginUser">Username</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">👤</span>
+            <input type="text" id="loginUser" placeholder="Enter your username" required autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginPass">Password</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">🔒</span>
+            <input type="password" id="loginPass" placeholder="Enter your password" required autocomplete="off" />
+            <button type="button" class="login-toggle-pass" id="togglePass" aria-label="Toggle password visibility">
+              <span id="eyeIcon">👁</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-error" id="loginError">
+          <span>⚠️</span>
+          <p id="loginErrorMsg">Invalid username or password</p>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span class="login-btn-text">Sign In</span>
+          <span class="login-btn-loader"></span>
+        </button>
+      </form>
+
+      <p class="login-footer-text">🔐 Authorized personnel only</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- ADMIN DASHBOARD (hidden until authenticated)   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="admin-layout" id="adminDashboard" style="display:none;">
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-brand">
@@ -20,7 +80,9 @@
       </div>
 
       <nav class="sidebar-nav" id="categoryNav">
-        <button class="cat-btn active" data-cat="chai">☕ Kulhad Chai</button>
+        <button class="cat-btn active" data-cat="dashboard">📊 Dashboard</button>
+        <div class="sidebar-divider"></div>
+        <button class="cat-btn" data-cat="chai">☕ Kulhad Chai</button>
         <button class="cat-btn" data-cat="icetea">🧊 Ice & Special</button>
         <button class="cat-btn" data-cat="coffee">☕ Coffee</button>
         <button class="cat-btn" data-cat="shakes">🥤 Shakes</button>
@@ -36,27 +98,61 @@
       <div class="sidebar-footer">
         <a href="/menu.html" target="_blank" class="preview-btn">👁 Preview Menu</a>
         <button class="reset-btn" id="resetAll">🗑 Reset All Data</button>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
       </div>
     </aside>
 
     <!-- MAIN -->
     <main class="admin-main">
-      <header class="admin-header">
-        <div>
-          <h1 id="catTitle">Kulhad Chai</h1>
-          <p class="item-count" id="itemCount">0 items</p>
+      <!-- TOP BAR -->
+      <div class="admin-topbar" id="adminTopbar">
+        <div class="topbar-welcome">
+          <span class="topbar-dot"></span>
+          <span>Admin Session Active</span>
         </div>
-        <button class="add-btn" id="addItemBtn">+ Add Item</button>
-      </header>
+        <button class="topbar-logout" id="topbarLogout">
+          Logout <span>→</span>
+        </button>
+      </div>
 
-      <!-- ITEM GRID -->
-      <div class="items-grid" id="itemsGrid"></div>
+      <!-- DASHBOARD VIEW -->
+      <div class="dashboard-view" id="dashboardView">
+        <header class="admin-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="item-count">Menu overview & stats</p>
+          </div>
+        </header>
 
-      <!-- EMPTY STATE -->
-      <div class="empty-state" id="emptyState" style="display:none;">
-        <span>📋</span>
-        <h3>No items yet</h3>
-        <p>Click "Add Item" to add your first menu item to this category.</p>
+        <!-- STAT CARDS -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- CATEGORY BREAKDOWN -->
+        <div class="stats-breakdown">
+          <h3 class="breakdown-title">📋 Category Breakdown</h3>
+          <div class="breakdown-grid" id="breakdownGrid"></div>
+        </div>
+      </div>
+
+      <!-- MENU MANAGER VIEW -->
+      <div class="manager-view" id="managerView" style="display:none;">
+        <header class="admin-header">
+          <div>
+            <h1 id="catTitle">Kulhad Chai</h1>
+            <p class="item-count" id="itemCount">0 items</p>
+          </div>
+          <button class="add-btn" id="addItemBtn">+ Add Item</button>
+        </header>
+
+        <!-- ITEM GRID -->
+        <div class="items-grid" id="itemsGrid"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <span>📋</span>
+          <h3>No items yet</h3>
+          <p>Click "Add Item" to add your first menu item to this category.</p>
+        </div>
       </div>
     </main>
   </div>
@@ -114,11 +210,155 @@
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div class="admin-toast" id="adminToast">
+    <span class="toast-icon" id="toastIcon">✅</span>
+    <p class="toast-msg" id="toastMsg">Action completed</p>
+  </div>
+
   <script type="module">
     import './src/styles/admin.css';
+    import { isAuthenticated, attemptLogin, logout, getCategoryStats } from './src/admin-auth.js';
+
+    // ── DOM ──
+    const loginScreen = document.getElementById('loginScreen');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const loginErrorMsg = document.getElementById('loginErrorMsg');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginCard = document.getElementById('loginCard');
+    const togglePass = document.getElementById('togglePass');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const loginPass = document.getElementById('loginPass');
+
+    // ── TOAST ──
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('adminToast');
+      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── AUTH FLOW ──
+    function showDashboard() {
+      loginScreen.style.display = 'none';
+      adminDashboard.style.display = 'grid';
+      renderDashboardStats();
+      showToast('Welcome back, Admin!', '👋');
+    }
+
+    function showLogin() {
+      adminDashboard.style.display = 'none';
+      loginScreen.style.display = 'flex';
+    }
+
+    // Check on load
+    if (isAuthenticated()) {
+      showDashboard();
+    }
+
+    // Toggle password visibility
+    togglePass.addEventListener('click', () => {
+      const isPassword = loginPass.type === 'password';
+      loginPass.type = isPassword ? 'text' : 'password';
+      eyeIcon.textContent = isPassword ? '🙈' : '👁';
+    });
+
+    // Login form submit
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('loginUser').value;
+      const password = document.getElementById('loginPass').value;
+
+      // Show loading state
+      loginBtn.classList.add('loading');
+      loginError.classList.remove('show');
+
+      const result = await attemptLogin(username, password);
+
+      if (result.success) {
+        loginCard.classList.add('success');
+        setTimeout(() => {
+          showDashboard();
+          loginBtn.classList.remove('loading');
+          loginCard.classList.remove('success');
+          loginForm.reset();
+        }, 600);
+      } else {
+        loginBtn.classList.remove('loading');
+        loginError.classList.add('show');
+        loginErrorMsg.textContent = result.message;
+        loginCard.classList.add('shake');
+        setTimeout(() => loginCard.classList.remove('shake'), 500);
+      }
+    });
+
+    // Logout handlers
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    document.getElementById('topbarLogout').addEventListener('click', handleLogout);
+
+    function handleLogout() {
+      if (confirm('Are you sure you want to logout?')) {
+        logout();
+        showLogin();
+        showToast('Logged out successfully', '🔒');
+      }
+    }
+
+    // ── DASHBOARD STATS ──
+    function renderDashboardStats() {
+      const stats = getCategoryStats();
+
+      // Top stat cards
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-number">${stats.totalItems}</div>
+          <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📂</div>
+          <div class="stat-number">${stats.totalCategories}</div>
+          <div class="stat-label">Categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📸</div>
+          <div class="stat-number">${stats.totalImages}</div>
+          <div class="stat-label">With Images</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-number">${stats.totalItems > 0 ? Math.round((stats.totalImages / stats.totalItems) * 100) : 0}%</div>
+          <div class="stat-label">Image Coverage</div>
+        </div>
+      `;
+
+      // Category breakdown
+      document.getElementById('breakdownGrid').innerHTML = stats.categories.map(cat => `
+        <div class="breakdown-card" data-cat="${cat.key}">
+          <div class="breakdown-icon">${cat.icon}</div>
+          <div class="breakdown-info">
+            <h4>${cat.name}</h4>
+            <p>${cat.count} item${cat.count !== 1 ? 's' : ''}${cat.withImages > 0 ? ` · ${cat.withImages} with image${cat.withImages !== 1 ? 's' : ''}` : ''}</p>
+          </div>
+          <div class="breakdown-count">${cat.count}</div>
+        </div>
+      `).join('');
+
+      // Click on breakdown card to navigate to that category
+      document.querySelectorAll('.breakdown-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const cat = card.dataset.cat;
+          switchToCategory(cat);
+        });
+      });
+    }
 
     // ── STATE ──
-    let currentCat = 'chai';
+    let currentCat = 'dashboard';
     let editIndex = -1;
     const STORAGE_KEY = 'teatoria_menu';
 
@@ -141,6 +381,27 @@
 
     function saveMenu(data) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // ── VIEW SWITCHING ──
+    function switchToCategory(cat) {
+      currentCat = cat;
+
+      // Update sidebar active
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      const targetBtn = document.querySelector(`[data-cat="${cat}"]`);
+      if (targetBtn) targetBtn.classList.add('active');
+
+      if (cat === 'dashboard') {
+        document.getElementById('dashboardView').style.display = 'block';
+        document.getElementById('managerView').style.display = 'none';
+        renderDashboardStats();
+      } else {
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('managerView').style.display = 'block';
+        document.getElementById('catTitle').textContent = catNames[currentCat];
+        render();
+      }
     }
 
     // ── RENDER ──
@@ -192,9 +453,11 @@
         btn.addEventListener('click', () => {
           if (confirm('Delete this item?')) {
             const data = loadMenu();
+            const deletedName = data[currentCat][parseInt(btn.dataset.idx)].name;
             data[currentCat].splice(parseInt(btn.dataset.idx), 1);
             saveMenu(data);
             render();
+            showToast(`"${deletedName}" deleted`, '🗑️');
           }
         });
       });
@@ -276,7 +539,7 @@
 
     function handleImage(file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert('Image too large. Max 2MB.');
+        showToast('Image too large. Max 2MB.', '⚠️');
         return;
       }
       const reader = new FileReader();
@@ -304,8 +567,10 @@
       const data = loadMenu();
       if (editIndex >= 0) {
         data[currentCat][editIndex] = item;
+        showToast(`"${item.name}" updated`, '✏️');
       } else {
         data[currentCat].push(item);
+        showToast(`"${item.name}" added to ${catNames[currentCat]}`, '✅');
       }
       saveMenu(data);
       closeModal();
@@ -321,22 +586,36 @@
     document.getElementById('categoryNav').addEventListener('click', (e) => {
       const btn = e.target.closest('.cat-btn');
       if (!btn) return;
-      currentCat = btn.dataset.cat;
-      document.getElementById('catTitle').textContent = catNames[currentCat];
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      render();
+      switchToCategory(btn.dataset.cat);
     });
 
     document.getElementById('resetAll').addEventListener('click', () => {
       if (confirm('This will delete ALL your menu items. Are you sure?')) {
         localStorage.removeItem(STORAGE_KEY);
-        render();
+        if (currentCat === 'dashboard') {
+          renderDashboardStats();
+        } else {
+          render();
+        }
+        showToast('All menu data has been reset', '🗑️');
       }
     });
 
-    // Init
-    render();
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Escape to close modal
+      if (e.key === 'Escape' && overlay.classList.contains('show')) {
+        closeModal();
+      }
+      // Ctrl+N / Cmd+N to add new item (only when in manager view)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n' && currentCat !== 'dashboard') {
+        e.preventDefault();
+        openModal();
+      }
+    });
+
+    // Init — don't render menu items until a category is selected
+    // Dashboard is shown by default via switchToCategory
   </script>
 </body>
 </html>
