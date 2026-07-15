@@ -16,7 +16,7 @@
 
 .story-logo {
   max-width: 80%;
-  border-radius: 50%;
+  border-radius: 12px;
   box-shadow: 0 16px 48px rgba(26,58,26,0.15), 0 0 0 1px rgba(200,165,90,0.2);
   transition: transform 0.5s ease;
 }
