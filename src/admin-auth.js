@@ -5,8 +5,8 @@ const AUTH_SESSION_KEY = 'teatoria_admin_session';
 const STORAGE_KEY = 'teatoria_menu';
 
 // Pre-computed SHA-256 hashes of the admin credentials
-const VALID_USERNAME_HASH = '59336f9541c3862ecf34f7ac237ce551a97b91bc8d217332f882bb14abb27057';
-const VALID_PASSWORD_HASH = '475dfecc413d1a03c26dd3beffe48565bed464e1b2cd8f631f32ed0033260f3c';
+const VALID_USERNAME_HASH = 'f76f4c737368f5d93519aaafa6b90ebef1039adfd8ab34b5849cb237b13b399e';
+const VALID_PASSWORD_HASH = '3eca9f0eea8ab977ec22f6c00cdef40f1a824fea60a14e28b566dbbf42d19e7c';
 
 // ── Hashing ──
 async function sha256(str) {
