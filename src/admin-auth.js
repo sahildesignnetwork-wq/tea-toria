@@ -27,7 +27,7 @@ export function isAuthenticated() {
 // ── Login ──
 export async function attemptLogin(username, password) {
   const inputUserHash = await sha256(username.trim());
-  const inputPassHash = await sha256(password);
+  const inputPassHash = await sha256(password.trim());
 
   if (inputUserHash === VALID_USERNAME_HASH && inputPassHash === VALID_PASSWORD_HASH) {
     sessionStorage.setItem(AUTH_SESSION_KEY, 'authenticated');
