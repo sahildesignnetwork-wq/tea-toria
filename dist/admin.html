@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Manager — Tea Toria Admin</title>
+  <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+  <script type="module" crossorigin src="/assets/admin-DUiNXtRx.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-BxR_cmXS.js">
+  <link rel="stylesheet" crossorigin href="/assets/admin-BcMrxYqT.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LOGIN SCREEN                                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-bg-leaves">
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">🌿</div>
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">🌿</div>
+      <div class="login-leaf">🍃</div>
+      <div class="login-leaf">☕</div>
+    </div>
+
+    <div class="login-card" id="loginCard">
+      <div class="login-brand">
+        <img src="/images/tea-toria-logo-green.jpg" alt="Tea Toria" class="login-logo" />
+        <h1>Tea <span>Toria</span></h1>
+        <p class="login-subtitle">Admin Panel</p>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="login-field">
+          <label for="loginUser">Username</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">👤</span>
+            <input type="text" id="loginUser" placeholder="Enter your username" required autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginPass">Password</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">🔒</span>
+            <input type="password" id="loginPass" placeholder="Enter your password" required autocomplete="off" />
+            <button type="button" class="login-toggle-pass" id="togglePass" aria-label="Toggle password visibility">
+              <span id="eyeIcon">👁</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-error" id="loginError">
+          <span>⚠️</span>
+          <p id="loginErrorMsg">Invalid username or password</p>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span class="login-btn-text">Sign In</span>
+          <span class="login-btn-loader"></span>
+        </button>
+      </form>
+
+      <p class="login-footer-text">🔐 Authorized personnel only</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- ADMIN DASHBOARD (hidden until authenticated)   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="admin-layout" id="adminDashboard" style="display:none;">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/images/tea-toria-logo-green.jpg" alt="Tea Toria Logo" class="sidebar-logo" />
+        <div>
+          <h2>Tea Toria</h2>
+          <p>Menu Manager</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="categoryNav">
+        <button class="cat-btn active" data-cat="dashboard">📊 Dashboard</button>
+        <div class="sidebar-divider"></div>
+        <button class="cat-btn" data-cat="chai">☕ Kulhad Chai</button>
+        <button class="cat-btn" data-cat="icetea">🧊 Ice & Special</button>
+        <button class="cat-btn" data-cat="coffee">☕ Coffee</button>
+        <button class="cat-btn" data-cat="shakes">🥤 Shakes</button>
+        <button class="cat-btn" data-cat="maggie">🍜 Maggie</button>
+        <button class="cat-btn" data-cat="sandwich">🥪 Sandwich</button>
+        <button class="cat-btn" data-cat="burger">🍔 Burger</button>
+        <button class="cat-btn" data-cat="pizza">🍕 Pizza</button>
+        <button class="cat-btn" data-cat="pasta">🍝 Pasta</button>
+        <button class="cat-btn" data-cat="snacks">🍟 Snacks</button>
+        <button class="cat-btn" data-cat="bun">🧁 Musca Bun</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/menu.html" target="_blank" class="preview-btn">👁 Preview Menu</a>
+        <button class="reset-btn" id="resetAll">🗑 Reset All Data</button>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+      <!-- TOP BAR -->
+      <div class="admin-topbar" id="adminTopbar">
+        <div class="topbar-welcome">
+          <span class="topbar-dot"></span>
+          <span>Admin Session Active</span>
+        </div>
+        <button class="topbar-logout" id="topbarLogout">
+          Logout <span>→</span>
+        </button>
+      </div>
+
+      <!-- DASHBOARD VIEW -->
+      <div class="dashboard-view" id="dashboardView">
+        <header class="admin-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="item-count">Menu overview & stats</p>
+          </div>
+        </header>
+
+        <!-- STAT CARDS -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- CATEGORY BREAKDOWN -->
+        <div class="stats-breakdown">
+          <h3 class="breakdown-title">📋 Category Breakdown</h3>
+          <div class="breakdown-grid" id="breakdownGrid"></div>
+        </div>
+      </div>
+
+      <!-- MENU MANAGER VIEW -->
+      <div class="manager-view" id="managerView" style="display:none;">
+        <header class="admin-header">
+          <div>
+            <h1 id="catTitle">Kulhad Chai</h1>
+            <p class="item-count" id="itemCount">0 items</p>
+          </div>
+          <button class="add-btn" id="addItemBtn">+ Add Item</button>
+        </header>
+
+        <!-- ITEM GRID -->
+        <div class="items-grid" id="itemsGrid"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <span>📋</span>
+          <h3>No items yet</h3>
+          <p>Click "Add Item" to add your first menu item to this category.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="itemModal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Item</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+
+      <form id="itemForm">
+        <!-- IMAGE UPLOAD -->
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="imageInput" accept="image/*" hidden />
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <span>📷</span>
+            <p>Click or drag image here</p>
+            <small>JPG, PNG, WebP — max 2MB</small>
+          </div>
+          <img class="upload-preview" id="uploadPreview" alt="Preview" />
+          <button type="button" class="upload-change" id="uploadChange" style="display:none;">Change Image</button>
+        </div>
+
+        <!-- FIELDS -->
+        <div class="form-fields">
+          <div class="field">
+            <label for="itemName">Item Name *</label>
+            <input type="text" id="itemName" placeholder="e.g. Tandoor Chai" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="itemSub">Description *</label>
+              <input type="text" id="itemSub" placeholder="Short description" required />
+            </div>
+            <div class="field">
+              <label for="itemTag">Tag / Label</label>
+              <input type="text" id="itemTag" placeholder="e.g. Signature, Spicy" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="itemRecipe">Recipe <span class="optional">(optional)</span></label>
+            <textarea id="itemRecipe" rows="3" placeholder="Ingredients & preparation notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+          <button type="submit" class="btn-save">💾 Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="admin-toast" id="adminToast">
+    <span class="toast-icon" id="toastIcon">✅</span>
+    <p class="toast-msg" id="toastMsg">Action completed</p>
+  </div>
+
+</body>
+</html>
