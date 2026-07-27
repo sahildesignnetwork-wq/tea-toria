@@ -54,7 +54,7 @@ export function renderFooter() {
   footer.innerHTML = `
     <div class="footer-content">
       <div class="footer-logo"><img src="/images/tea-toria-logo-green.jpg" alt="Tea Toria" class="footer-logo-img" /> Tea Toria</div>
-      <p class="footer-tagline">"Traditional Taste With Tandoor"</p>
+      <p class="footer-tagline">"Traditional taste of India"</p>
       <div class="footer-links">
         <a href="/">Home</a>
         <a href="/menu.html">Menu</a>
